@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .rounded-search {
+            border-radius: 50px;
+        }
+        .custom-width {
+            width: 30%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-info">
+    <div class="container-fluid">
+        <a class="navbar-brand text-body-secondary fs-1 " href="/product">IMS</a>
+
+        <div class="collapse navbar-collapse container  " id="navbarSupportedContent">
+            <form class="d-flex mx-auto">
+                <input id="search-input" minlength="1" class="form-control me-2" type="search" placeholder="Search Product"
+                       aria-label="Search">
+                <button id="search-button" class="btn btn-outline-success" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h0L14 15.015l-1.015-1.014h0a6.5 6.5 0 0 0-1.243-3.657zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+            </form>
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-right: auto;">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/product">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/category">Category</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+<!--   <div class="container text-center mt-5">
+     <h1>Inventory Management System</h1>
+ </div>
+
+-->
+<div class="container col-md-6 mx-auto mt-5">
+    <div class="row ">
+        <div class="col-md-6">
+            <label class="col-form-label" for="dropdownInput">Filter By Category</label>
+            <select id="dropdownInput" class="form-control category dropdownInputFilter" name="category">
+
+            </select>
+        </div>
+        <div class="col-md-6 text-right">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal"
+                    data-bs-whatever="@mdo">Add Product
+            </button>
+
+
+
+            <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add Product</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="product-form" action="product/add" method="post">
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="">Product Name</label>
+                                    <input type="text" class="form-control" id="name" name="name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="col-form-label" for="dropdownInput">Category</label>
+                                    <select class="form-control category dropdownInput" id="dropdownInput" name="category">
+
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="recipient-name" class="col-form-label">Quantity</label>
+                                    <input type="number" min="1" class="form-control" id="quantity" name="quantity">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="add-button">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{{#if productsList}}
+    <table class="table table-bordered border-primary container mt-5">
+    <thead>
+    <tr>
+        <th scope="col">
+            Product Name
+            <i id="sort-descending-product-name" class="ms-2 bi bi-caret-up-fill arrow-up"></i>
+            <i id="sort-ascending-product-name" class="ms-2 bi bi-caret-down-fill arrow-down"></i>
+        </th>
+        <th scope="col">Category</th>
+        <th scope="col">
+            Quantity
+            <i id="sort-descending-product-quantity" class="ms-2 bi bi-caret-up-fill arrow-up"></i>
+            <i id="sort-ascending-product-quantity" class="ms-2 bi bi-caret-down-fill arrow-down"></i>
+        </th>
+        <th scope="col">Action</th>
+    </tr>
+    </thead>
+    <tbody id="product-table-body">
+    {{#each productsList}}
+        <tr>
+            <td>{{this.name}}</td>
+            <td>{{this.category}}</td>
+            <td>{{this.quantity}}</td>
+            <td>
+                <button class="btn edit-product-button" data-bs-toggle="modal"
+                        data-bs-target="#editProductModal{{this.id}}" data-bs-whatever="@mdo"
+                        data-product-id="{{this.id}}">
+                    <i class="bi bi-pencil-fill" style="color:blue"></i>
+                </button>
+
+                <div class="modal fade" id="editProductModal{{this.id}}" tabindex="-1"
+                     aria-labelledby="exampleModalLabel1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Update Product</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="update-product-form">
+                                    <div class="mb-3">
+                                        <label for="name" class="">Product Name</label>
+                                        <input type="text" minlength="1" class="form-control name" name="name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="col-form-label" for="dropdownInput">Category</label>
+                                        <select class="form-control category dropdownInput" name="category">
+
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="quantity" class="col-form-label">Quantity</label>
+                                        <input type="number" min="1" class="form-control quantity" name="quantity">
+                                    </div>
+                                    <input type="hidden" value="{{this.id}}" class="id" name="id">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary update-button">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn">
+                    <i class="bi bi-trash-fill delete-product-button" style="color:red"
+                       data-product-id="{{this.id}}"></i>
+                </button>
+            </td>
+        </tr>
+    {{/each}}
+
+    </tbody>
+</table>
+{{/if}}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#add-button").click(function () {
+            var formData = $("#product-form").serializeArray();
+
+            var data = {};
+            formData.forEach(function (field) {
+                data[field.name] = field.value;
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "product/add",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (response) {
+                    $("#product-modal").modal("hide");
+                    location.reload();
+                }
+            });
+        });
+
+
+        <!-- Event handle for edit icon -->
+        $(".edit-product-button").click(function () {
+            console.log("delete clicked.");
+            var id = $(this).data("product-id");
+
+            var productName = $(this).closest("tr").find("#name" + id).val();
+            var category = $(this).closest("tr").find("#category" + id).val();
+            var quantity = $(this).closest("tr").find("#quantity" + id).val();
+
+
+            $("#name").val(productName);
+            $("#category").val(category);
+            $("#quantity").val(quantity);
+
+            $("#id").val(id);
+        });
+
+
+        <!--    Delete Product    -->
+        $(".delete-product-button").click(function () {
+            var id = $(this).data("product-id");
+
+        $.ajax({
+                type: "DELETE",
+                url: "product/delete/" + id,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+
+
+        <!--   Update button event     -->
+        $(document).on("click", ".update-button", function () {
+            var modal = $(this).closest(".modal");
+            var formData = modal.find(".update-product-form").serializeArray();
+            var id = modal.find(".id").val();
+
+            var data = {};
+            formData.forEach(function (field) {
+                data[field.name] = field.value;
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "product/update/" + id,
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+
+        <!-- Search for products.   -->
+        $("#search-button").click(function (e) {
+            e.preventDefault();
+
+            var searchTerm = $("#search-input").val();
+            console.log(searchTerm);
+            $.ajax({
+                type: "GET",
+                url: "product/search?name=" + searchTerm ,
+                success: function (response) {
+                    updateTableWithResponse(response.data.productEntity);
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    });
+
+    function updateTableWithResponse(results) {
+        $("#product-table-body").empty();
+
+        $.each(results, function (index, product) {
+            var newRow = "<tr>" +
+                "<td>" + product.name + "</td>" +
+                "<td>" + product.category + "</td>" +
+                "<td>" + product.quantity + "</td>" +
+                "<td>" +
+                '<button class="btn edit-product-button" data-bs-toggle="modal" ' +
+                'data-bs-target="#editProductModal' + product.id + '" data-bs-whatever="@mdo" ' +
+                'data-product-id="' + product.id + '">' +
+                '<i class="bi bi-pencil-fill" style="color:blue"></i>' +
+                '</button>' +
+                '<div class="modal fade" id="editProductModal' + product.id + '" tabindex="-1" ' +
+                'aria-labelledby="exampleModalLabel1" aria-hidden="true">' +
+                '<div class="modal-dialog">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header">' +
+                '<h1 class="modal-title fs-5" id="exampleModalLabel">Update Product</h1>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="modal" ' +
+                'aria-label="Close"></button>' +
+                '</div>' +
+                '<div class="modal-body">' +
+                '<form class="update-product-form">' +
+                '<div class="mb-3">' +
+                '<label for="name" class="">Product Name</label>' +
+                '<input type="text" class="form-control name" name="name">' +
+                '</div>' +
+                '<div class="mb-3">' +
+                '<label class="col-form-label" for="dropdownInput">Category</label>' +
+                '<select class="form-control category" name="category">' +
+                '<option value="Electronics">Electronics</option>' +
+                '<option value="Clothing">Clothing</option>' +
+                '<option value="Sports">Sports</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="mb-3">' +
+                '<label for="quantity" class="col-form-label">Quantity</label>' +
+                '<input type="number" class="form-control quantity" name="quantity">' +
+                '</div>' +
+                '<input type="hidden" value="' + product.id + '" class="id" name="id">' +
+                '</form>' +
+                '</div>' +
+                '<div class="modal-footer">' +
+                '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>' +
+                '<button type="button" class="btn btn-primary update-button">Update</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<button class="btn">' +
+                '<i class="bi bi-trash-fill delete-product-button" style="color:red" ' +
+                'data-product-id="' + product.id + '"></i>' +
+                '</button>' +
+                '</td>' +
+                "</tr>";
+
+                $("#product-table-body").append(newRow);
+        });
+    }
+
+    <!-- Category   -->
+
+    <!-- Get category   -->
+    $(document).ready(function () {
+        var dropdown = $(".dropdownInputFilter");
+
+        $.ajax({
+            type: "GET",
+            url: "/category/list",
+            success: function (response) {
+                if (Array.isArray(response.data.categoriesList)) {
+                    dropdown.empty();
+                    response.data.categoriesList.forEach(function (category) {
+                        dropdown.append(
+                            $("<option></option>")
+                                .attr("value", category.name)
+                                .text(category.name)
+                        );
+                    });
+                }
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            }
+        });
+
+        dropdown.change(function() {
+        var selectedValue = $(this).val();
+
+        if (selectedValue) {
+            $.ajax({
+                type: "GET",
+                url: "product/filter/" + selectedValue,
+                success: function (response) {
+                    console.log("API response:", response);
+                    updateTableWithResponse(response.data.filteredProducts);
+                },
+                error: function (error) {
+                    console.error("API error:", error);
+                }
+            });
+        }
+        });
+
+    <!-- Select option for category list without filtering.   -->
+        var dropdownInput = $(".dropdownInput");
+        $.ajax({
+            type: "GET",
+            url: "/category/list",
+            success: function (response) {
+                if (Array.isArray(response.data.categoriesList)) {
+                    dropdownInput.empty();
+                    response.data.categoriesList.forEach(function (category) {
+                        dropdownInput.append(
+                            $("<option></option>")
+                                .attr("value", category.name)
+                                .text(category.name)
+                        );
+                    });
+                }
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            }
+        });
+    });
+
+    <!-- Add category   -->
+    $(document).ready(function () {
+        $("#add-category-button").click(function (e) {
+            e.preventDefault();
+            var name = $("#category-name").val();
+            var description = $("#category-description").val();
+
+            var data = {
+                name: name,
+                description: description
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "category/add",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (response) {
+                    console.log("Response:", response);
+                    location.reload();
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    });
+
+    <!--  Sort by alphabetically product name  -->
+    $(document).ready(function () {
+        $("#sort-ascending-product-name").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "product/sort-by-alphabetic",
+                success: function (response) {
+                    console.log("Sorted products:", response);
+                    updateTableWithResponse(response.data.sortedList);
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+
+        $("#sort-descending-product-name").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "product/sort-by-alphabetic",
+                success: function (response) {
+                    console.log("Sorted products:", response);
+                    updateTableWithResponse(response.data.sortedList.reverse());
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+
+        $("#sort-ascending-product-quantity").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "product/sort-by-quantity",
+                success: function (response) {
+                    console.log("Sorted products:", response);
+                    updateTableWithResponse(response.data.sortedList);
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                    }
+            });
+        })
+
+        $("#sort-descending-product-quantity").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "product/sort-by-quantity",
+                success: function (response) {
+                    console.log("Sorted products:", response);
+                    updateTableWithResponse(response.data.sortedList.reverse());
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                    }
+            });
+        })
+
+    })
+
+</script>
+
+</body>
+</html>

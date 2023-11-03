@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        .rounded-search {
+            border-radius: 50px;
+        }
+
+        .custom-width {
+            width: 30%;
+            margin: 0 auto;
+        }
+    </style>
+
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-info">
+    <div class="container-fluid">
+        <a class="navbar-brand text-body-secondary fs-1 " href="#">IMS</a>
+
+        <div class="collapse navbar-collapse container  " id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-right: auto;">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/product">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/category">Category</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+
+
+<div class="container col-md-6 mx-auto mt-5">
+    <div class="toast-container">
+
+    </div>
+    <div class="row d-flex justify-content-center">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" data-bs-whatever="@fat">
+                Add Category
+        </button>
+    </div>
+</div>
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="category-form" action="category/add" method="post">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="">Category Name</label>
+                            <input type="text" class="form-control" id="category-name" name="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="recipient-name" class="">Category Description</label>
+                            <input type="text" class="form-control" id="category-description" name="description">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-category-button">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#if categoriesList}}
+        <table class="table table-bordered border-primary container mt-5">
+        <thead>
+        <tr>
+            <th scope="col">
+                Category Name
+            </th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody id="product-table-body">
+        {{#each categoriesList}}
+            <tr>
+                <td>{{this.name}}</td>
+                <td>
+                    <button class="btn edit-product-button" data-bs-toggle="modal"
+                            data-bs-target="#editProductModal{{this.id}}" data-bs-whatever="@mdo"
+                            data-product-id="{{this.id}}">
+                        <i class="bi bi-pencil-fill" style="color:blue;"></i>
+                    </button>
+
+                    <div class="modal fade" id="editProductModal{{this.id}}" tabindex="-1"
+                        aria-labelledby="exampleModalLabel1" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Update Category</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="update-category-form">
+                                        <div class="mb-3">
+                                            <label for="name" class="">Category Name</label>
+                                            <input type="text" minlength="1" class="form-control name" name="name">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="quantity" class="col-form-label">Description</label>
+                                            <input type="text" minlength="1" class="form-control quantity" name="description">
+                                        </div>
+                                        <input type="hidden" value="{{this.id}}" class="id" name="id">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary update-button" id="update-category-button" data-product-id="{{this.id}}">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn">
+                        <i class="bi bi-trash-fill delete-product-button" style="color:red"
+                        data-product-id="{{this.name}}"></i>
+                    </button>
+                </td>
+            </tr>
+        {{/each}}
+        </tbody>
+        </table>
+    {{else}}
+        <h1 class="d-flex justify-content-center mt-5">There are no categories. Add categories to list down the categories.</h1>
+    {{/if}}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#add-category-button").click(function () {
+                var name = $("#category-name").val();
+                var description = $("#category-description").val();
+
+                var data = {
+                    name: name,
+                    description: description
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "category/add",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response.message)
+                        location.reload();
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+
+            $(document).on("click", ".update-button", function () {
+                var modal = $(this).closest(".modal");
+                var formData = modal.find(".update-category-form").serializeArray();
+                var id = modal.find(".id").val();
+
+                var data = {};
+                formData.forEach(function (field) {
+                    data[field.name] = field.value;
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "category/update/" + id,
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: function (response) {
+                        console.log(response.message);
+                        location.reload();
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+
+            $(".delete-product-button").click(function () {
+                var name = $(this).data("product-id");
+
+                $.ajax({
+                    type: "DELETE",
+                    url: "category/delete/" + name,
+                    success: function (response) {
+                        console.log(response.message)
+                        location.reload();
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });        
+    </script>
+</body>
+</html>
